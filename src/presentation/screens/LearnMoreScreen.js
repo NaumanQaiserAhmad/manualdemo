@@ -17,6 +17,13 @@ const LearnMoreScreen = ({ route }) => {
     console.log("Loaded Data: ", data); // Add debug log to check data
   }, []);
 
+  // Hide the default header (action bar)
+  useEffect(() => {
+    navigation.setOptions({
+      headerShown: false, // Hide the default header
+    });
+  }, [navigation]);
+
   // If data is still loading, show loading spinner
   if (isLoading) {
     return (
@@ -65,12 +72,11 @@ const LearnMoreScreen = ({ route }) => {
       <Image source={getImageSource()} style={styles.image} />
 
       {/* Title */}
-      <Text style={styles.header}>{currentData.header}</Text> {/* Title inside <Text> */}
-      
-      <Text style={styles.title}>{currentData.title}</Text> {/* Title inside <Text> */}
+      <Text style={styles.header}>{currentData.header}</Text>
+      <Text style={styles.title}>{currentData.title}</Text>
 
       {/* Description */}
-      <Text style={styles.subtitle}>{currentData.subtitle}</Text> {/* Subtitle inside <Text> */}
+      <Text style={styles.subtitle}>{currentData.subtitle}</Text>
 
       {/* Next or Done Button */}
       {index < learnMoreData.length - 1 ? (
@@ -83,7 +89,7 @@ const LearnMoreScreen = ({ route }) => {
         </TouchableOpacity>
       )}
     </View>
-  );  
+  );
 };
 
 const styles = StyleSheet.create({
@@ -97,10 +103,10 @@ const styles = StyleSheet.create({
   image: {
     height: 200,
     marginBottom: 20,
-    marginLeft:10,
-    marginLeft:10,
+    marginLeft: 10,
+    marginRight: 10,
     alignSelf: 'center', // Centers the image horizontally
-  },  
+  },
   header: {
     fontSize: 12,
     fontWeight: 'bold',
@@ -109,7 +115,7 @@ const styles = StyleSheet.create({
     textAlign: 'left', // Aligns text to the left
     width: '100%', // Ensures that the text container spans the full width of its parent
     paddingLeft: 20, // Optional padding to ensure some space from the left edge
-  },  
+  },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
