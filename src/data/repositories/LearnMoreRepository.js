@@ -1,10 +1,9 @@
-import { LearnMoreModel } from '../models/LearnMoreModel';
+import LocalLearnMoreDataSource from '../dataSources/LocalLearnMoreDataSource';
 
-export class LearnMoreRepository {
-  async getLearnMoreData() {
-    return [
-      new LearnMoreModel("HAIR LOSS", "We're working around the clock to bring you a holistic approach to your wellness."),
-      new LearnMoreModel("ERECTILE DYSFUNCTION", "We're working around the clock to bring you a holistic approach to your wellness."),
-    ];
+class LearnMoreRepository {
+  getLearnMoreData() {
+    return LocalLearnMoreDataSource.getLearnMoreData(); // Fetch data from local source
   }
 }
+
+export default new LearnMoreRepository();

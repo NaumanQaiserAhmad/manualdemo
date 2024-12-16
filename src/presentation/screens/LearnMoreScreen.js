@@ -1,16 +1,58 @@
-import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, Image, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import GetLearnMoreData from '../../domain/usecases/GetLearnMoreData';
 
-const LearnMoreScreen = ({ route, navigation }) => {
-  const { learnMoreData, index, totalScreens } = route.params; // Access params passed from LandingScreen
-  const currentData = learnMoreData[index]; // Get current screen data
+const LearnMoreScreen = ({ route }) => {
+  const { index } = route.params; // Get the index of the current screen
+  const [learnMoreData, setLearnMoreData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true); // Loading state
+  const navigation = useNavigation();
+
+  // Fetch the data when the component mounts
+  useEffect(() => {
+    const data = GetLearnMoreData.getLearnMoreData(); // Fetch data from the use case
+    setLearnMoreData(data); // Set the data into state
+    setIsLoading(false); // Set loading to false once data is fetched
+    console.log("Loaded Data: ", data); // Add debug log to check data
+  }, []);
+
+  // If data is still loading, show loading spinner
+  if (isLoading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
+
+  // Get current data based on the index
+  const currentData = learnMoreData[index];
+  console.log("Current Data: ", currentData); // Log current data to verify it
+
+  // If currentData is undefined (invalid index), show loading or error state
+  if (!currentData) {
+    return (
+      <View style={styles.container}>
+        <Text>Data not available</Text> {/* Ensure error message is inside <Text> */}
+      </View>
+    );
+  }
+
+  // Function to handle the image loading based on the index
+  const getImageSource = () => {
+    if (index === 0) {
+      return require('../../assets/images/group1.png'); // Path to your first image
+    } else if (index === 1) {
+      return require('../../assets/images/group2.png'); // Path to your second image
+    }
+    return require('../../assets/images/group2.png'); // Optional fallback image
+  };
 
   const handleNext = () => {
-    if (index < totalScreens - 1) {
+    if (index < learnMoreData.length - 1) {
       navigation.navigate('LearnMore', { 
-        learnMoreData: learnMoreData,
         index: index + 1, // Move to the next screen
-        totalScreens: totalScreens,
       });
     } else {
       navigation.navigate('Landing'); // Navigate back to Landing when done
@@ -19,27 +61,29 @@ const LearnMoreScreen = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      {/* Title */}
-      <Text style={styles.title}>{currentData.title}</Text>
-
       {/* Image */}
-      <Image source={{ uri: currentData.imageUrl }} style={styles.image} />
+      <Image source={getImageSource()} style={styles.image} />
+
+      {/* Title */}
+      <Text style={styles.header}>{currentData.header}</Text> {/* Title inside <Text> */}
+      
+      <Text style={styles.title}>{currentData.title}</Text> {/* Title inside <Text> */}
 
       {/* Description */}
-      <Text style={styles.description}>{currentData.description}</Text>
+      <Text style={styles.subtitle}>{currentData.subtitle}</Text> {/* Subtitle inside <Text> */}
 
       {/* Next or Done Button */}
-      {index < totalScreens - 1 ? (
+      {index < learnMoreData.length - 1 ? (
         <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
-          <Text style={styles.buttonText}>Next</Text>
+          <Text style={styles.buttonText}>Next</Text> {/* Text inside <Text> */}
         </TouchableOpacity>
       ) : (
         <TouchableOpacity style={styles.doneButton} onPress={() => navigation.navigate('Landing')}>
-          <Text style={styles.buttonText}>Done</Text>
+          <Text style={styles.buttonText}>Done</Text> {/* Text inside <Text> */}
         </TouchableOpacity>
       )}
     </View>
-  );
+  );  
 };
 
 const styles = StyleSheet.create({
@@ -50,35 +94,49 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#e6f0e2',
   },
-  title: {
-    fontSize: 24,
+  image: {
+    height: 200,
+    marginBottom: 20,
+    marginLeft:10,
+    marginLeft:10,
+    alignSelf: 'center', // Centers the image horizontally
+  },  
+  header: {
+    fontSize: 12,
     fontWeight: 'bold',
     color: '#2d3d3a',
-    marginBottom: 20,
-  },
-  image: {
-    width: 200,
-    height: 200,
-    borderRadius: 10,
-    marginBottom: 20,
-  },
-  description: {
-    fontSize: 18,
-    textAlign: 'center',
-    marginBottom: 40,
+    marginBottom: 10,
+    textAlign: 'left', // Aligns text to the left
+    width: '100%', // Ensures that the text container spans the full width of its parent
+    paddingLeft: 20, // Optional padding to ensure some space from the left edge
+  },  
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
     color: '#2d3d3a',
+    textAlign: 'left', // Aligns text to the left
+    marginBottom: 15,
+  },
+  subtitle: {
+    fontSize: 18,
+    marginBottom: 40,
+    textAlign: 'left', // Aligns text to the left
+    color: '#2d3d3a',
+    lineHeight: 24,
   },
   nextButton: {
     backgroundColor: '#9b2d2d',
     paddingVertical: 12,
     paddingHorizontal: 50,
-    borderRadius: 5,
+    borderRadius: 50,
+    marginTop: 20,
   },
   doneButton: {
     backgroundColor: '#2d3d3a',
     paddingVertical: 12,
     paddingHorizontal: 50,
-    borderRadius: 5,
+    borderRadius: 50,
+    marginTop: 20,
   },
   buttonText: {
     color: '#fff',
