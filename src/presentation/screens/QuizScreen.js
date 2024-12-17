@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import GetQuizData from '../../domain/usecases/GetQuizData';
+import Ionicons from 'react-native-vector-icons/Ionicons'; // For back arrow icon
 
 const QuizScreen = () => {
   const navigation = useNavigation();
@@ -17,8 +18,10 @@ const QuizScreen = () => {
       setQuizData(data);
     };
     fetchData();
+    
+    // Remove the header (action bar) for this screen
     navigation.setOptions({
-      headerShown: true,
+      headerShown: false,
     });
   }, [navigation]);
 
@@ -55,27 +58,39 @@ const QuizScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.question}>{currentQuestion.question}</Text>
-
-      <View style={styles.optionsContainer}>
-        {currentQuestion.options.map((option, index) => (
-          <TouchableOpacity
-            key={index}
-            style={[
-              styles.optionButton,
-              selectedOption === option && styles.selectedOption, // Apply styles for selected option
-            ]}
-            onPress={() => handleAnswer(option)}
-          >
-            {currentQuestion.type === 'ChoiceTypeImage' ? (
-              <Image source={{ uri: option.display }} style={styles.optionImage} />
-            ) : (
-              <Text style={styles.optionText}>{option.display}</Text>
-            )}
-          </TouchableOpacity>
-        ))}
+      {/* Custom Header Container */}
+      <View style={styles.customHeader}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Ionicons name="chevron-back" size={30} color="#2d3d3a" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Quiz</Text>
       </View>
 
+      {/* Question and Options Section */}
+      <View style={styles.topContainer}>
+        <Text style={styles.question}>{currentQuestion.question}</Text>
+
+        <View style={styles.optionsContainer}>
+          {currentQuestion.options.map((option, index) => (
+            <TouchableOpacity
+              key={index}
+              style={[
+                styles.optionButton,
+                selectedOption === option && styles.selectedOption, // Apply styles for selected option
+              ]}
+              onPress={() => handleAnswer(option)}
+            >
+              {currentQuestion.type === 'ChoiceTypeImage' ? (
+                <Image source={{ uri: option.display }} style={styles.optionImage} />
+              ) : (
+                <Text style={styles.optionText}>{option.display}</Text>
+              )}
+            </TouchableOpacity>
+          ))}
+        </View>
+      </View>
+
+      {/* Next Button */}
       <View style={styles.navigationButtons}>
         <TouchableOpacity
           onPress={handleNext}
@@ -97,6 +112,33 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     backgroundColor: '#e6f0e2',
     paddingBottom: 40,
+    marginTop: 50, // Adjust for custom header
+  },
+  customHeader: {
+    width: '100%',
+    height: 50,
+    backgroundColor: '#e6f0e2',
+    flexDirection: 'row',
+  
+    alignItems: 'center',
+    position: 'absolute',
+    top: 0,
+    zIndex: 10,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#2d3d3a',
+    textAlign: 'center',
+    flex: 1,
+    fontFamily: 'TTNormsProRegular', // Apply your custom font here
+  },
+  topContainer: {
+    flex: 2,
+    justifyContent: 'center',  // Center content vertically
+    alignItems: 'center',
+    paddingTop: 70,  // Adjusted for custom header height
+    paddingHorizontal: 20,
   },
   question: {
     fontSize: 30,
@@ -104,6 +146,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     textAlign: 'center',
     marginTop: 150,
+    fontFamily: 'TTNormsProRegular', // Apply custom font
   },
   optionsContainer: {
     flexDirection: 'row',
@@ -131,6 +174,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 16,
     color: '#2d3d3a',
+    fontFamily: 'TTNormsProRegular', // Apply custom font
   },
   navigationButtons: {
     alignItems: 'center',
@@ -151,6 +195,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#fff',
     textAlign: 'center',
+    fontFamily: 'TTNormsProRegular', // Apply custom font
   },
 });
 

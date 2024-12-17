@@ -2,27 +2,26 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import GetLearnMoreData from '../../domain/usecases/GetLearnMoreData';
+import Ionicons from 'react-native-vector-icons/Ionicons'; // For the close/cancel icon
 
 const LearnMoreScreen = ({ route }) => {
-  const { index } = route.params; // Get the index of the current screen
+  const { index } = route.params;
   const [learnMoreData, setLearnMoreData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true); // Loading state
+  const [isLoading, setIsLoading] = useState(true);
   const navigation = useNavigation();
 
   // Fetch the data when the component mounts
   useEffect(() => {
     const data = GetLearnMoreData.getLearnMoreData(); // Fetch data from the use case
     setLearnMoreData(data); // Set the data into state
-    setIsLoading(false); // Set loading to false once data is fetched
-    console.log("Loaded Data: ", data); // Add debug log to check data
-  }, []);
 
-  // Hide the default header (action bar)
-  useEffect(() => {
+    // Hide the header (action bar)
     navigation.setOptions({
-      headerShown: false, // Hide the default header
+      headerShown: false,  // This removes the default header
     });
-  }, [navigation]);
+
+    setIsLoading(false); // Set loading to false once data is fetched
+  }, []);
 
   // If data is still loading, show loading spinner
   if (isLoading) {
@@ -35,13 +34,12 @@ const LearnMoreScreen = ({ route }) => {
 
   // Get current data based on the index
   const currentData = learnMoreData[index];
-  console.log("Current Data: ", currentData); // Log current data to verify it
 
   // If currentData is undefined (invalid index), show loading or error state
   if (!currentData) {
     return (
       <View style={styles.container}>
-        <Text>Data not available</Text> {/* Ensure error message is inside <Text> */}
+        <Text>Data not available</Text>
       </View>
     );
   }
@@ -58,36 +56,50 @@ const LearnMoreScreen = ({ route }) => {
 
   const handleNext = () => {
     if (index < learnMoreData.length - 1) {
-      navigation.navigate('LearnMore', { 
-        index: index + 1, // Move to the next screen
+      navigation.navigate('LearnMore', {
+        index: index + 1,
       });
     } else {
-      navigation.navigate('Landing'); // Navigate back to Landing when done
+      navigation.navigate('Landing');
     }
   };
 
   return (
     <View style={styles.container}>
-      {/* Image */}
-      <Image source={getImageSource()} style={styles.image} />
-
-      {/* Title */}
-      <Text style={styles.header}>{currentData.header}</Text>
-      <Text style={styles.title}>{currentData.title}</Text>
-
-      {/* Description */}
-      <Text style={styles.subtitle}>{currentData.subtitle}</Text>
-
-      {/* Next or Done Button */}
-      {index < learnMoreData.length - 1 ? (
-        <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
-          <Text style={styles.buttonText}>Next</Text> {/* Text inside <Text> */}
+      {/* Custom Header Container */}
+      <View style={styles.customHeader}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Ionicons name="close" size={30} color="#2d3d3a" />
         </TouchableOpacity>
-      ) : (
-        <TouchableOpacity style={styles.doneButton} onPress={() => navigation.navigate('Landing')}>
-          <Text style={styles.buttonText}>Done</Text> {/* Text inside <Text> */}
-        </TouchableOpacity>
-      )}
+        <Text style={styles.headerTitle}>What can we help with</Text>
+      </View>
+
+      {/* Top Content Section */}
+      <View style={styles.topContainer}>
+        {/* Image */}
+        <Image source={getImageSource()} style={styles.image} />
+
+        {/* Title */}
+        <Text style={styles.header}>{currentData.header}</Text>
+        <Text style={styles.title}>{currentData.title}</Text>
+
+        {/* Description */}
+        <Text style={styles.subtitle}>{currentData.subtitle}</Text>
+      </View>
+
+      {/* Bottom Container for Buttons */}
+      <View style={styles.bottomContainer}>
+        {/* Next or Done Button */}
+        {index < learnMoreData.length - 1 ? (
+          <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
+            <Text style={styles.buttonText}>Next</Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity style={styles.doneButton} onPress={() => navigation.navigate('Landing')}>
+            <Text style={styles.buttonText}>Done</Text>
+          </TouchableOpacity>
+        )}
+      </View>
     </View>
   );
 };
@@ -95,59 +107,99 @@ const LearnMoreScreen = ({ route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
     backgroundColor: '#e6f0e2',
+    marginTop: 50, // Adjust for custom header
+  },
+  customHeader: {
+    width: '100%',
+    height: 50,
+    backgroundColor: '#e6f0e2',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    position: 'absolute',
+    top: 0,
+    zIndex: 10,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#2d3d3a',
+    textAlign: 'center',
+    flex: 1,
+    fontFamily: 'TTNormsProRegular', // Apply custom font
+  },
+  topContainer: {
+    flex: 2,  // Adjust this to control the space it takes
+    justifyContent: 'center',  // Center content vertically
+    alignItems: 'center',
+    paddingTop: 70,  // Adjusted for custom header height
+    paddingHorizontal: 20,
   },
   image: {
     height: 200,
     marginBottom: 20,
     marginLeft: 10,
     marginRight: 10,
-    alignSelf: 'center', // Centers the image horizontally
+    alignSelf: 'center',
   },
   header: {
     fontSize: 12,
     fontWeight: 'bold',
     color: '#2d3d3a',
     marginBottom: 10,
-    textAlign: 'left', // Aligns text to the left
-    width: '100%', // Ensures that the text container spans the full width of its parent
-    paddingLeft: 20, // Optional padding to ensure some space from the left edge
+    textAlign: 'left',
+    width: '100%',
+    paddingLeft: 0,
+    fontFamily: 'TTNormsProRegular', // Apply custom font
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
     color: '#2d3d3a',
-    textAlign: 'left', // Aligns text to the left
+    textAlign: 'left',
     marginBottom: 15,
+    width: '100%',
+    fontFamily: 'TTNormsProRegular', // Apply custom font
   },
   subtitle: {
     fontSize: 18,
     marginBottom: 40,
-    textAlign: 'left', // Aligns text to the left
+    textAlign: 'left',
     color: '#2d3d3a',
     lineHeight: 24,
+    width: '100%',
+    fontFamily: 'TTNormsProRegular', // Apply custom font
+  },
+  bottomContainer: {
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    marginBottom: 40,
   },
   nextButton: {
-    backgroundColor: '#9b2d2d',
+    backgroundColor: '#2d3d3a',
     paddingVertical: 12,
     paddingHorizontal: 50,
     borderRadius: 50,
+    width: '80%', // Control the width of the button
     marginTop: 20,
+  
   },
   doneButton: {
     backgroundColor: '#2d3d3a',
     paddingVertical: 12,
     paddingHorizontal: 50,
     borderRadius: 50,
+    width: '80%', // Control the width of the button
     marginTop: 20,
   },
   buttonText: {
     color: '#fff',
     fontSize: 18,
+    textAlign: 'center',
     fontWeight: 'bold',
+    fontFamily: 'TTNormsProRegular', // Apply custom font
   },
 });
 

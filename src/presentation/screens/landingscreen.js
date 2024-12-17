@@ -69,6 +69,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#A5B79F', // Light green background
     paddingHorizontal: 20,
+    
   },
   topContainer: {
     flex: 1,  // Takes up the remaining space
@@ -89,16 +90,18 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 52,  // Adjusted size for better balance
     fontWeight: 'bold',
-    color: '#2d3d3a', // Dark green color
+    color: '#0B3B3C', // Dark green color
     textAlign: 'center',
     marginBottom: 10, // Reduced space between title and subtitle
+    fontFamily: 'TTNormsProExtraLight', // Apply custom font
   },
   subtitle: {
     fontSize: 18,
-    color: '#2d3d3a',
+    color: '#0B3B3C',
     textAlign: 'center',
     marginBottom: 30,  // Reduced margin to bring it closer to buttons
     marginHorizontal: 10,
+    fontFamily: 'TTNormsProRegular', // Apply custom font
   },
   bottomContainer: {
     justifyContent: 'flex-end', // Align the buttons to the bottom
@@ -112,6 +115,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     textDecorationLine: 'underline', // Underlined text for Learn More button
     marginBottom: 10,  // Reduced margin to bring it closer to Take the Quiz button
+    fontFamily: 'TTNormsProExtraLight', // Apply custom font
   },
   takeQuizButton: {
     backgroundColor: '#9b2d2d',  // Dark red for the button
@@ -126,6 +130,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#fff',
     textAlign: 'center',
+    fontFamily: 'TTNormsProExtraLight', // Apply custom font
   },
 });
 
