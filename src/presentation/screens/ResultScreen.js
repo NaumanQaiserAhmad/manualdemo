@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Linking } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
 const ResultScreen = ({ route, navigation }) => {
   const { message } = route.params;
@@ -11,36 +11,8 @@ const ResultScreen = ({ route, navigation }) => {
     });
   }, [navigation]);
 
-  // Function to handle the link press
-  const handleLinkPress = (url) => {
-    Linking.openURL(url);
-  };
-
-  // Function to render the message with clickable URLs
-  const renderMessageWithLink = (message) => {
-    // Regex to exactly match www.manual.co or www.manual.com
-    const urlRegex = /(www\.manual\.(co|com))/g;
-
-    // Split the message into parts
-    const parts = message.split(urlRegex);  // Split the message by URLs
-
-    return parts.map((part, index) => {
-      // Check if the part is a URL
-      if (urlRegex.test(part)) {
-        return (
-          <Text
-            key={index}
-            style={styles.linkText}
-            onPress={() => handleLinkPress(`https://${part}`)}  // Make the URL clickable, add https:// if missing
-          >
-            {part}
-          </Text>
-        );
-      }
-      // Regular text
-      return <Text key={index} style={styles.messageText}>{part}</Text>;
-    });
-  };
+  // Ensure the message is a string, or set a default message if not
+  const validMessage = typeof message === 'string' ? message : 'No message available';
 
   return (
     <View style={styles.container}>
@@ -51,7 +23,7 @@ const ResultScreen = ({ route, navigation }) => {
 
       {/* Message Text - Centered */}
       <View style={styles.messageContainer}>
-        {renderMessageWithLink(message)} {/* Render message with clickable links */}
+        <Text style={styles.messageText}>{validMessage}</Text> {/* Render message as simple text */}
       </View>
 
       {/* OK Button */}
@@ -95,9 +67,10 @@ const styles = StyleSheet.create({
   messageContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 100, // Adjust for custom header height
+    marginTop: 80, // Adjusted for custom header height
     marginBottom: 40,
     paddingHorizontal: 30,
+    flex: 1,  // Ensures the message container takes up remaining space
   },
   messageText: {
     fontSize: 18,
@@ -106,15 +79,10 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     fontFamily: 'TTNormsProRegular',  // Custom font
   },
-  linkText: {
-    fontSize: 18,
-    color: '#0066cc',  // Color for clickable links
-    textDecorationLine: 'underline',  // Underlined for links
-  },
   bottomContainer: {
-    justifyContent: 'flex-end',
+    justifyContent: 'flex-end',  // Pushes the button to the bottom
     alignItems: 'center',
-    marginBottom: 40,
+    marginBottom: 40,  // Padding at the bottom for spacing
     width: '100%',
   },
   okButton: {
